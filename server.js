@@ -3,20 +3,44 @@ const cors = require('cors')
 const axios = require('axios')
 const app = express()
 const { MongoClient } = require('mongodb');
-const port = 3000
-
+// const port = 3000
+const port = process.env.PORT || 3000;
 const qiniu = require('qiniu')
 require('dotenv').config()
 
 // 中间件：解析 JSON 请求体
 app.use(express.json())
 
+// app.use(cors({
+//   origin: '*', // 更新为你实际使用的地址
+//   methods: ['GET', 'POST', 'DELETE'],
+//   credentials: false,
+//   // credentials: true,
+// }))
+
+// 1. 更新 CORS 配置 - 这是最关键的部分
 app.use(cors({
-  origin: '*', // 更新为你实际使用的地址
-  methods: ['GET', 'POST', 'DELETE'],
-  credentials: false,
-  // credentials: true,
-}))
+  origin: '*',  // 允许所有来源
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],  // 添加 OPTIONS
+  credentials: false
+}));
+
+// 2. 添加简单的请求日志和手动 CORS 头 - 帮助调试
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} from ${req.headers.origin || 'unknown'}`);
+
+  // 手动添加 CORS 头作为备份
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // 快速响应 OPTIONS 请求
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  next();
+});
 
 // 静态文件服务
 app.use(express.static('public'))
@@ -25,8 +49,8 @@ const querystring = require('querystring')
 const { request } = require('axios')
 const client_id = 'dfa7c80cf17f4170884a9576aa69a568'
 const client_secret = '043d731cacfb40d6b6760bf4a83eb232'
-// const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
-const redirect_uri = 'http://127.0.0.1:5173/callback'
+const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
+// const redirect_uri = 'http://127.0.0.1:5173/callback'
 
 const generateRandomString = function(length) {
   let text = ''
@@ -378,9 +402,19 @@ app.get('/mySongs', async (req, res) => {
   });
 });
 
-
-
-// 启动服务器
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${ port }`)
+app.get('/songs', async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "获取所有收藏的音乐成功",
+    songs: 666
+  })
 })
+
+// // 启动服务器
+// app.listen(port, () => {
+//   console.log(`Server running at http://localhost:${ port }`)
+// })
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
