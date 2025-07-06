@@ -96,6 +96,11 @@ app.get('/test', (req, res) => {
   });
 });
 
+app.get('/redirect-test', (req, res) => {
+  // 使用重定向而不是JSON响应
+  res.redirect('https://www.google.com');
+});
+
 app.get('/login', function(req, res) {
 
   const state = generateRandomString(16)
