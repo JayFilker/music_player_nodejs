@@ -3,8 +3,8 @@ const cors = require('cors')
 const axios = require('axios')
 const app = express()
 const { MongoClient } = require('mongodb');
-// const port = 3000
-const port = process.env.PORT || 3000;
+const port = 3000
+
 const qiniu = require('qiniu')
 require('dotenv').config()
 
@@ -410,11 +410,7 @@ app.get('/songs', async (req, res) => {
   })
 })
 
-// // 启动服务器
-// app.listen(port, () => {
-//   console.log(`Server running at http://localhost:${ port }`)
-// })
-
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
-});
+// 启动服务器
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${ port }`)
+})
