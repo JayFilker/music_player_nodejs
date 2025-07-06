@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
 const app = express()
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require('mongodb')
 const port = 3000
 
 const qiniu = require('qiniu')
@@ -20,8 +20,8 @@ app.use(express.json())
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: '*'
-}));
+  allowedHeaders: '*',
+}))
 
 // 静态文件服务
 app.use(express.static('public'))
@@ -83,23 +83,26 @@ app.post('/api/exchange-token', async (req, res) => {
 app.get('/songs', async (req, res) => {
   return res.status(200).json({
     success: true,
-    message: "获取所有收藏的音乐成功",
-    songs: 666
+    message: '获取所有收藏的音乐成功',
+    songs: 666,
   })
 })
 
 app.get('/test', (req, res) => {
-  console.log('test 路由被访问');
+  console.log('test 路由被访问')
   return res.status(200).json({
     success: true,
-    message: "测试路由正常工作"
-  });
-});
+    message: '测试路由正常工作',
+  })
+})
 
-app.get('/redirect-test', (req, res) => {
+app.get('/redirect-test', function(req, res)
+{
   // 使用重定向而不是JSON响应
-  res.redirect('https://www.google.com');
-});
+  res.redirect('https://www.google.com')
+}
+)
+
 
 app.get('/login', function(req, res) {
 
@@ -241,7 +244,7 @@ app.get('/api/videos', async (req, res) => {
             updatedAt: item.putTime,
             videoUrl: videoUrl,
             title: item.key.split('/').pop().replace(/\.[^/.]+$/, ''),// 提取文件名作为标题
-            img: `${qiniuConfig.domain}/${item.key}?vframe/jpg/offset/1/w/320/h/180&t=${Date.now()}`,
+            img: `${ qiniuConfig.domain }/${ item.key }?vframe/jpg/offset/1/w/320/h/180&t=${ Date.now() }`,
           }
         })
 
@@ -281,7 +284,7 @@ app.get('/api/imgs', async (req, res) => {
       if (respInfo.statusCode === 200) {
         // 只返回视频文件（可根据文件后缀过滤）
         const videoFiles = respBody.items.filter(item =>
-          item.key.endsWith('.jpg')
+          item.key.endsWith('.jpg'),
         ).map(item => {
           const videoUrl = `${ qiniuConfig.domain }/${ item.key }`
           const fileName = item.key.split('/').pop().replace(/\.[^/.]+$/, '')
@@ -308,7 +311,7 @@ app.get('/api/imgs', async (req, res) => {
 app.get('/api/videos/info', (req, res) => {
   try {
     // const { key } = req.params
-    const { key } = req.query;
+    const { key } = req.query
     const mac = new qiniu.auth.digest.Mac(qiniuConfig.accessKey,
       qiniuConfig.secretKey)
     const config = new qiniu.conf.Config()
@@ -333,76 +336,75 @@ app.get('/api/videos/info', (req, res) => {
   }
 })
 
-const MongDBUrl='mongodb+srv://18050939892:deerkesi3815@blog.ssrtblo.mongodb.net/blogBatabase?retryWrites=true&w=majority&appName=blog'
+const MongDBUrl = 'mongodb+srv://18050939892:deerkesi3815@blog.ssrtblo.mongodb.net/blogBatabase?retryWrites=true&w=majority&appName=blog'
 app.post('/add-like-song', async (req, res) => {
-  const MONGODB_URI = MongDBUrl;
-  const newComment = req.body;
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  const database = client.db("music-player");
-  const songs = database.collection("music-player-demo");
+  const MONGODB_URI = MongDBUrl
+  const newComment = req.body
+  const client = new MongoClient(MONGODB_URI)
+  await client.connect()
+  const database = client.db('music-player')
+  const songs = database.collection('music-player-demo')
   const commentWithDate = {
     ...newComment,
-  };
+  }
 
   // 添加新评论
-  await songs.insertOne(commentWithDate);
+  await songs.insertOne(commentWithDate)
   return res.status(200).json({
     success: true,
-    message: "更新成功",
-  });
-});
+    message: '更新成功',
+  })
+})
 
 app.post('/remove-like-song', async (req, res) => {
-  const MONGODB_URI = MongDBUrl;
-  const songData = req.body;
-  const client = new MongoClient(MONGODB_URI);
+  const MONGODB_URI = MongDBUrl
+  const songData = req.body
+  const client = new MongoClient(MONGODB_URI)
 
   try {
-    await client.connect();
-    const database = client.db("music-player");
-    const songs = database.collection("music-player-demo");
+    await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('music-player-demo')
 
     // 删除name匹配的记录
-    const result = await songs.deleteOne({ name: songData.name });
+    const result = await songs.deleteOne({ name: songData.name })
 
     if (result.deletedCount === 1) {
       return res.status(200).json({
         success: true,
-        message: "删除成功"
-      });
+        message: '删除成功',
+      })
     } else {
       return res.status(404).json({
         success: false,
-        message: "未找到要删除的歌曲"
-      });
+        message: '未找到要删除的歌曲',
+      })
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "删除失败",
-      error: error.message
-    });
+      message: '删除失败',
+      error: error.message,
+    })
   } finally {
-    await client.close();
+    await client.close()
   }
-});
-
+})
 
 app.get('/my-songs', async (req, res) => {
-  const client = new MongoClient(MongDBUrl);
-  await client.connect();
-  const database = client.db("music-player");
-  const songs = database.collection("music-player-demo");
+  const client = new MongoClient(MongDBUrl)
+  await client.connect()
+  const database = client.db('music-player')
+  const songs = database.collection('music-player-demo')
 
-  const allBlogs = await songs.find({}).toArray();
+  const allBlogs = await songs.find({}).toArray()
 
   return res.status(200).json({
     success: true,
-    message: "获取所有收藏的音乐成功",
-    songs: allBlogs
-  });
-});
+    message: '获取所有收藏的音乐成功',
+    songs: allBlogs,
+  })
+})
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${ port }`)
