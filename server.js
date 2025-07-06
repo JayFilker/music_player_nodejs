@@ -13,8 +13,9 @@ app.use(express.json())
 
 app.use(cors({
   origin: '*', // 更新为你实际使用的地址
-  methods: ['GET', 'POST'],
-  credentials: true,
+  methods: ['GET', 'POST', 'DELETE'],
+  credentials: false,
+  // credentials: true,
 }))
 
 // 静态文件服务
@@ -24,8 +25,8 @@ const querystring = require('querystring')
 const { request } = require('axios')
 const client_id = 'dfa7c80cf17f4170884a9576aa69a568'
 const client_secret = '043d731cacfb40d6b6760bf4a83eb232'
-const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
-// const redirect_uri = 'http://127.0.0.1:5173/callback'
+// const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
+const redirect_uri = 'http://127.0.0.1:5173/callback'
 
 const generateRandomString = function(length) {
   let text = ''
