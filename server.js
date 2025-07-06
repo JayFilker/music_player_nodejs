@@ -88,6 +88,13 @@ app.get('/songs', async (req, res) => {
   })
 })
 
+app.get('/test', (req, res) => {
+  console.log('test 路由被访问');
+  return res.status(200).json({
+    success: true,
+    message: "测试路由正常工作"
+  });
+});
 
 app.get('/login', function(req, res) {
 
