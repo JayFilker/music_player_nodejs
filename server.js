@@ -17,30 +17,11 @@ app.use(express.json())
 //   credentials: false,
 //   // credentials: true,
 // }))
-
-// 1. 更新 CORS 配置 - 这是最关键的部分
 app.use(cors({
-  origin: '*',  // 允许所有来源
-  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],  // 添加 OPTIONS
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: '*'
 }));
-
-// 2. 添加简单的请求日志和手动 CORS 头 - 帮助调试
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} from ${req.headers.origin || 'unknown'}`);
-
-  // 手动添加 CORS 头作为备份
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  // 快速响应 OPTIONS 请求
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  next();
-});
 
 // 静态文件服务
 app.use(express.static('public'))
@@ -98,6 +79,15 @@ app.post('/api/exchange-token', async (req, res) => {
     // });
   }
 })
+
+app.get('/songs', async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "获取所有收藏的音乐成功",
+    songs: 666
+  })
+})
+
 
 app.get('/login', function(req, res) {
 
@@ -401,15 +391,6 @@ app.get('/my-songs', async (req, res) => {
     songs: allBlogs
   });
 });
-
-app.get('/songs', async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "获取所有收藏的音乐成功",
-    songs: 666
-  })
-})
-
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${ port }`)
