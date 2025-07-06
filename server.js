@@ -11,17 +11,16 @@ require('dotenv').config()
 // 中间件：解析 JSON 请求体
 app.use(express.json())
 
-// app.use(cors({
-//   origin: '*', // 更新为你实际使用的地址
-//   methods: ['GET', 'POST', 'DELETE'],
-//   credentials: false,
-//   // credentials: true,
-// }))
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: '*',
+  origin: '*', // 更新为你实际使用的地址
+  methods: ['GET', 'POST', 'DELETE'],
+  credentials: true,
 }))
+// app.use(cors({
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: '*',
+// }))
 
 // 静态文件服务
 app.use(express.static('public'))
@@ -34,33 +33,7 @@ const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
 // const redirect_uri = 'http://127.0.0.1:5173/callback'
 
 
-// 添加在所有路由之前
-app.use((req, res, next) => {
-  console.log(`请求开始: ${req.method} ${req.url}`);
 
-  // 捕获响应完成事件
-  res.on('finish', () => {
-    console.log(`响应完成: ${req.method} ${req.url} - 状态: ${res.statusCode}`);
-  });
-
-  next();
-});
-
-// 添加在 /songs 路由中
-app.get('/songs', function(req, res) {
-  console.log('songs 路由处理开始');
-  try {
-    res.status(200).json({
-      success: true,
-      message: "获取所有收藏的音乐成功",
-      songs: 666
-    });
-    console.log('songs 路由处理完成');
-  } catch (error) {
-    console.error('songs 路由处理错误:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 const generateRandomString = function(length) {
   let text = ''
@@ -107,6 +80,21 @@ app.post('/api/exchange-token', async (req, res) => {
     //   details: error.response?.data || error.message
     // });
   }
+})
+
+app.get('/lpgin', function(req, res) {
+
+  const state = generateRandomString(16)
+  const scope = 'streaming user-read-private user-read-email user-modify-playback-state user-read-playback-state'
+
+  res.redirect('https://accounts.spotify.com/authorize?' +
+    querystring.stringify({
+      response_type: 'code',
+      client_id: client_id,
+      scope: scope,
+      redirect_uri: redirect_uri,
+      state: state,
+    }))
 })
 
 app.get('/login', function(req, res) {
@@ -341,24 +329,27 @@ app.get('/api/videos/info', (req, res) => {
   }
 })
 
-const MongDBUrl = 'mongodb+srv://18050939892:deerkesi3815@blog.ssrtblo.mongodb.net/blogBatabase?retryWrites=true&w=majority&appName=blog'
+const MongDBUrl = 'mongodb+srv://18050939892:deerkesi3815@cluster0.bj08j3h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 app.post('/add-like-song', async (req, res) => {
   const MONGODB_URI = MongDBUrl
   const newComment = req.body
   const client = new MongoClient(MONGODB_URI)
-  await client.connect()
-  const database = client.db('music-player')
-  const songs = database.collection('music-player-demo')
-  const commentWithDate = {
-    ...newComment,
+  try{  await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('music-player-demo')
+    const commentWithDate = {
+      ...newComment,
+    }
+
+    // 添加新评论
+    await songs.insertOne(commentWithDate)
+    return res.status(200).json({
+      success: true,
+      message: '更新成功',
+    })}finally {
+    await client.close()
   }
 
-  // 添加新评论
-  await songs.insertOne(commentWithDate)
-  return res.status(200).json({
-    success: true,
-    message: '更新成功',
-  })
 })
 
 app.post('/remove-like-song', async (req, res) => {
@@ -398,17 +389,22 @@ app.post('/remove-like-song', async (req, res) => {
 
 app.get('/my-songs', async (req, res) => {
   const client = new MongoClient(MongDBUrl)
-  await client.connect()
-  const database = client.db('music-player')
-  const songs = database.collection('music-player-demo')
+  try{
+    await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('music-player-demo')
 
-  const allBlogs = await songs.find({}).toArray()
+    const allBlogs = await songs.find({}).toArray()
 
-  return res.status(200).json({
-    success: true,
-    message: '获取所有收藏的音乐成功',
-    songs: allBlogs,
-  })
+    return res.status(200).json({
+      success: true,
+      message: '获取所有收藏的音乐成功',
+      songs: allBlogs,
+    })
+  }finally {
+    await client.close()
+  }
+
 })
 // 启动服务器
 app.listen(port, () => {
