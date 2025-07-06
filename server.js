@@ -33,6 +33,35 @@ const client_secret = '043d731cacfb40d6b6760bf4a83eb232'
 const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
 // const redirect_uri = 'http://127.0.0.1:5173/callback'
 
+
+// 添加在所有路由之前
+app.use((req, res, next) => {
+  console.log(`请求开始: ${req.method} ${req.url}`);
+
+  // 捕获响应完成事件
+  res.on('finish', () => {
+    console.log(`响应完成: ${req.method} ${req.url} - 状态: ${res.statusCode}`);
+  });
+
+  next();
+});
+
+// 添加在 /songs 路由中
+app.get('/songs', function(req, res) {
+  console.log('songs 路由处理开始');
+  try {
+    res.status(200).json({
+      success: true,
+      message: "获取所有收藏的音乐成功",
+      songs: 666
+    });
+    console.log('songs 路由处理完成');
+  } catch (error) {
+    console.error('songs 路由处理错误:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 const generateRandomString = function(length) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -79,30 +108,6 @@ app.post('/api/exchange-token', async (req, res) => {
     // });
   }
 })
-
-app.get('/songs', async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: '获取所有收藏的音乐成功',
-    songs: 666,
-  })
-})
-
-app.get('/test', (req, res) => {
-  console.log('test 路由被访问')
-  return res.status(200).json({
-    success: true,
-    message: '测试路由正常工作',
-  })
-})
-
-app.get('/redirect-test', function(req, res)
-{
-  // 使用重定向而不是JSON响应
-  res.redirect('https://www.google.com')
-}
-)
-
 
 app.get('/login', function(req, res) {
 
