@@ -332,7 +332,7 @@ app.get('/api/videos/info', (req, res) => {
 })
 
 const MongDBUrl='mongodb+srv://18050939892:deerkesi3815@blog.ssrtblo.mongodb.net/blogBatabase?retryWrites=true&w=majority&appName=blog'
-app.post('/addLikeSong', async (req, res) => {
+app.post('/add-likeSong', async (req, res) => {
   const MONGODB_URI = MongDBUrl;
   const newComment = req.body;
   const client = new MongoClient(MONGODB_URI);
@@ -351,7 +351,7 @@ app.post('/addLikeSong', async (req, res) => {
   });
 });
 
-app.post('/removeLikeSong', async (req, res) => {
+app.post('/remove-likeSong', async (req, res) => {
   const MONGODB_URI = MongDBUrl;
   const songData = req.body;
   const client = new MongoClient(MONGODB_URI);
@@ -387,7 +387,7 @@ app.post('/removeLikeSong', async (req, res) => {
 });
 
 
-app.get('/mySongs', async (req, res) => {
+app.get('/my-songs', async (req, res) => {
   const client = new MongoClient(MongDBUrl);
   await client.connect();
   const database = client.db("music-player");
