@@ -34,33 +34,7 @@ const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
 // const redirect_uri = 'http://127.0.0.1:5173/callback'
 
 
-// 添加在所有路由之前
-app.use((req, res, next) => {
-  console.log(`请求开始: ${req.method} ${req.url}`);
 
-  // 捕获响应完成事件
-  res.on('finish', () => {
-    console.log(`响应完成: ${req.method} ${req.url} - 状态: ${res.statusCode}`);
-  });
-
-  next();
-});
-
-// 添加在 /songs 路由中
-app.get('/songs', function(req, res) {
-  console.log('songs 路由处理开始');
-  try {
-    res.status(200).json({
-      success: true,
-      message: "获取所有收藏的音乐成功",
-      songs: 666
-    });
-    console.log('songs 路由处理完成');
-  } catch (error) {
-    console.error('songs 路由处理错误:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 const generateRandomString = function(length) {
   let text = ''
@@ -107,6 +81,21 @@ app.post('/api/exchange-token', async (req, res) => {
     //   details: error.response?.data || error.message
     // });
   }
+})
+
+app.get('/lpgin', function(req, res) {
+
+  const state = generateRandomString(16)
+  const scope = 'streaming user-read-private user-read-email user-modify-playback-state user-read-playback-state'
+
+  res.redirect('https://accounts.spotify.com/authorize?' +
+    querystring.stringify({
+      response_type: 'code',
+      client_id: client_id,
+      scope: scope,
+      redirect_uri: redirect_uri,
+      state: state,
+    }))
 })
 
 app.get('/login', function(req, res) {
