@@ -406,6 +406,211 @@ app.get('/my-songs', async (req, res) => {
   }
 
 })
+
+
+app.post('/add-like-playList-or-albums', async (req, res) => {
+  const MONGODB_URI = MongDBUrl
+  const newComment = req.body
+  const client = new MongoClient(MONGODB_URI)
+  try{
+    await client.connect()
+    const database = client.db('music-player')
+    if(newComment.type==='album'){
+      const songs = database.collection('music-player-albums')
+      const commentWithDate = {
+        ...newComment,
+      }
+      // 添加新评论
+      await songs.insertOne(commentWithDate)
+      return res.status(200).json({
+        success: true,
+        message: '更新成功',
+      })
+    }else{
+      const songs = database.collection('music-player-playList')
+      const commentWithDate = {
+        ...newComment,
+      }
+      // 添加新评论
+      await songs.insertOne(commentWithDate)
+      return res.status(200).json({
+        success: true,
+        message: '更新成功',
+      })
+    }
+  }finally {
+    await client.close()
+  }
+
+})
+
+app.post('/remove-like-playList-or-albums', async (req, res) => {
+  const MONGODB_URI = MongDBUrl
+  const songData = req.body
+  const client = new MongoClient(MONGODB_URI)
+
+  try {
+    await client.connect()
+    const database = client.db('music-player')
+    if(songData.type==='album'){
+      const songs = database.collection('music-player-albums')
+
+      // 删除name匹配的记录
+      const result = await songs.deleteOne({ name: songData.name })
+
+      if (result.deletedCount === 1) {
+        return res.status(200).json({
+          success: true,
+          message: '删除成功',
+        })
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: `未找到要删除的歌曲${songData.name}`,
+        })
+      }
+    }else {
+      const songs = database.collection('music-player-playList')
+
+      // 删除name匹配的记录
+      const result = await songs.deleteOne({ name: songData.name })
+
+      if (result.deletedCount === 1) {
+        return res.status(200).json({
+          success: true,
+          message: '删除成功',
+        })
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: '未找到要删除的歌曲',
+        })
+      }
+    }
+  } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: '删除失败',
+        error: error.message,
+      })
+    } finally {
+    await client.close()
+  }
+})
+
+app.get('/my-playList-or-albums', async (req, res) => {
+  const client = new MongoClient(MongDBUrl)
+  const songData = req.query.type;
+  try{
+    await client.connect()
+    const database = client.db('music-player')
+    if(songData==='album'){
+      const songs = database.collection('music-player-albums')
+
+      const allBlogs = await songs.find({}).toArray()
+
+      return res.status(200).json({
+        success: true,
+        message: '获取所有收藏的音乐成功',
+        songs: allBlogs,
+      })
+    }else{
+      const songs = database.collection('music-player-playList')
+
+      const allBlogs = await songs.find({}).toArray()
+
+      return res.status(200).json({
+        success: true,
+        message: '获取所有收藏的音乐成功',
+        songs: allBlogs,
+      })
+    }
+
+  }finally {
+    await client.close()
+  }
+
+})
+
+
+app.post('/add-artist', async (req, res) => {
+  const MONGODB_URI = MongDBUrl
+  const newComment = req.body
+  const client = new MongoClient(MONGODB_URI)
+  try{  await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('artist')
+    const commentWithDate = {
+      ...newComment,
+    }
+
+    // 添加新评论
+    await songs.insertOne(commentWithDate)
+    return res.status(200).json({
+      success: true,
+      message: '更新成功',
+    })}finally {
+    await client.close()
+  }
+
+})
+
+app.post('/remove-artist', async (req, res) => {
+  const MONGODB_URI = MongDBUrl
+  const songData = req.body
+  const client = new MongoClient(MONGODB_URI)
+
+  try {
+    await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('artist')
+
+    // 删除name匹配的记录
+    const result = await songs.deleteOne({ name: songData.name })
+
+    if (result.deletedCount === 1) {
+      return res.status(200).json({
+        success: true,
+        message: '删除成功',
+      })
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: '未找到要删除的歌曲',
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: '删除失败',
+      error: error.message,
+    })
+  } finally {
+    await client.close()
+  }
+})
+
+app.get('/my-artist', async (req, res) => {
+  const client = new MongoClient(MongDBUrl)
+  try{
+    await client.connect()
+    const database = client.db('music-player')
+    const songs = database.collection('artist')
+
+    const allBlogs = await songs.find({}).toArray()
+
+    return res.status(200).json({
+      success: true,
+      message: '获取所有收藏的音乐成功',
+      songs: allBlogs,
+    })
+  }finally {
+    await client.close()
+  }
+
+})
+
+
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${ port }`)
