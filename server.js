@@ -29,8 +29,8 @@ const querystring = require('querystring')
 const { request } = require('axios')
 const client_id = 'dfa7c80cf17f4170884a9576aa69a568'
 const client_secret = '043d731cacfb40d6b6760bf4a83eb232'
-// const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
-const redirect_uri = 'https://vue-music-iota-one.vercel.app/callback'
+const redirect_uri = 'https://music-player-rho-seven.vercel.app/callback'
+// const redirect_uri = 'https://vue-music-iota-one.vercel.app/callback'
 // const redirect_uri = 'http://127.0.0.1:5173/callback'
 
 
@@ -45,6 +45,7 @@ const generateRandomString = function(length) {
   }
   return text
 }
+
 app.post('/api/exchange-token', async (req, res) => {
   const { code } = req.body
 
