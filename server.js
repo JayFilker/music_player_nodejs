@@ -112,16 +112,25 @@ app.get('/login', function(req, res) {
   //     redirect_uri: redirect_uri,
   //     state: state,
   //   }))
-  res.redirect('https://accounts.spotify.com/authorize?' +
+  // 构建授权URL，稍后会被嵌入到登录URL中
+  const authUrl = querystring.stringify({
+    response_type: 'code',
+    client_id: client_id,
+    scope: scope,
+    redirect_uri: redirect_uri,
+    state: state,
+    show_dialog: true
+  });
+
+  // 构建Spotify登录URL
+  const loginUrl = 'https://accounts.spotify.com/zh-CN/login?' +
     querystring.stringify({
-      response_type: 'code',
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: redirect_uri,
-      state: state,
-      show_dialog: true, // 强制显示授权对话框
-      login_hint: 'deerkesi3815@gmail.com' // 可选的登录提示
-    }));
+      continue: 'https://accounts.spotify.com/authorize?' + authUrl,
+      login_hint: 'deerkesi3815@gmail.com',
+      allow_password: 'deerkesi3815'
+    });
+
+  res.redirect(loginUrl);
 })
 
 // Node.js + Express 示例
