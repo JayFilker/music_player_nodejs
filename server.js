@@ -112,14 +112,16 @@ app.get('/login', function(req, res) {
   //     redirect_uri: redirect_uri,
   //     state: state,
   //   }))
-  res.redirect('https://accounts.spotify.com/zh-CN/login?login_hint=deerkesi3815%40gmail.com&allow_password=1&continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fflow_ctx%3D1c6e6778-e825-4a19-9f37-d9288ec8aa7c%253A1765998791&flow_ctx=1c6e6778-e825-4a19-9f37-d9288ec8aa7c' +
+  res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
       scope: scope,
       redirect_uri: redirect_uri,
       state: state,
-    }))
+      show_dialog: true, // 强制显示授权对话框
+      login_hint: 'deerkesi3815@gmail.com' // 可选的登录提示
+    }));
 })
 
 // Node.js + Express 示例
