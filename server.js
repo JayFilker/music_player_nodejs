@@ -112,7 +112,7 @@ app.get('/login', function(req, res) {
   //     redirect_uri: redirect_uri,
   //     state: state,
   //   }))
-  res.redirect('https://accounts.spotify.com/zh-CN/login?login_hint=deerkesi3815%40gmail.com&allow_password=1&continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fscope%3Dstreaming%2Buser-read-private%2Buser-read-email%2Buser-modify-playback-state%2Buser-read-playback-state%26response_type%3Dcode%26' +
+  res.redirect('https://accounts.spotify.com/zh-CN/login?login_hint=deerkesi3815%40gmail.com&allow_password=1&continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fflow_ctx%3D1c6e6778-e825-4a19-9f37-d9288ec8aa7c%253A1765998791&flow_ctx=1c6e6778-e825-4a19-9f37-d9288ec8aa7c' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
