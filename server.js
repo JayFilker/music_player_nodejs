@@ -112,6 +112,14 @@ app.get('/login', function(req, res) {
       redirect_uri: redirect_uri,
       state: state,
     }))
+  // res.redirect('https://accounts.spotify.com/zh-CN/login?login_hint=deerkesi3815%40gmail.com&allow_password=1&continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fscope%3Dstreaming%2Buser-read-private%2Buser-read-email%2Buser-modify-playback-state%2Buser-read-playback-state%26response_type%3Dcode%26redirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A5173%252Fcallback%26state%3DVx0t1q4wXQwwkzrF%26client_id%3Ddfa7c80cf17f4170884a9576aa69a568%26flow_ctx%3Defc016a0-8b5b-48ff-851b-7e94aa98af33%253A1765989290&flow_ctx=efc016a0-8b5b-48ff-851b-7e94aa98af33' +
+  //   querystring.stringify({
+  //     response_type: 'code',
+  //     client_id: client_id,
+  //     scope: scope,
+  //     redirect_uri: redirect_uri,
+  //     state: state,
+  //   }))
 })
 
 // Node.js + Express 示例
